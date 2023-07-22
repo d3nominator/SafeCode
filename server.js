@@ -4,6 +4,7 @@ const multer = require("multer");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 // const File = require('./Models/File');
+var fs = require("fs");
 const path = require("path");
 const File = require("./Models/File");
 
@@ -60,16 +61,15 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 
 app.get("/download/:id", handleDownload);
 app.post("/download/:id", handleDownload);
+
+app.get("/", (req, res) => {
+  res.redirect("/upload");
+});
+
   
   
 async function handleDownload(req, res) {
   const file = await File.findById(req.params.id);
-  console.log('hiii');
-    console.log(req.body.password);
-    console.log(req.params.id);
-    console.log(file.password);
-    // console.log('hiiiiidfsfsfsfsd');
-    //  console.log(file.password);
     if (file.password != null) {
       if ( req.body.password == null || req.body.password == "") {
         res.render("download", { id: req.params.id });
@@ -82,13 +82,11 @@ async function handleDownload(req, res) {
       file.downloadCount++;
       file.save();
       res.download(file.path);       
-      
     } 
     else {
      file.downloadCount++;
      file.save();
      res.download(file.path);
-    //  res.send('hii');
    }
 };
 
